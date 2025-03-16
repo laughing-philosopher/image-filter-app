@@ -27,13 +27,25 @@ function App() {
         formData.append("kernel_size", kernelSize);
         formData.append("z", zValue);
 
-        const response = await fetch("http://127.0.0.1:5000/upload", {
-            method: "POST",
-            body: formData,
-        });
+        try {
+            const response = await fetch("https://image-filter-app-qqg0.onrender.com/upload", {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "Accept": "application/json",
+                },
+            });
 
-        const data = await response.json();
-        setFilteredImages(data);
+            if (!response.ok) {
+                throw new Error("Failed to process image. Please try again.");
+            }
+
+            const data = await response.json();
+            setFilteredImages(data);
+        } catch (error) {
+            console.error("Error:", error);
+            alert("An error occurred while applying filters.");
+        }
     };
 
     return (
@@ -48,12 +60,25 @@ function App() {
             <div className="sliders">
                 <div className="slider-container">
                     <label>Filter Window Size: {kernelSize}</label>
-                    <input type="range" min="3" max="15" step="2" value={kernelSize} onChange={(e) => setKernelSize(e.target.value)} />
+                    <input
+                        type="range"
+                        min="3"
+                        max="15"
+                        step="2"
+                        value={kernelSize}
+                        onChange={(e) => setKernelSize(e.target.value)}
+                    />
                 </div>
 
                 <div className="slider-container">
                     <label>Edge Detection Strength: {zValue}</label>
-                    <input type="range" min="1" max="10" value={zValue} onChange={(e) => setZValue(e.target.value)} />
+                    <input
+                        type="range"
+                        min="1"
+                        max="10"
+                        value={zValue}
+                        onChange={(e) => setZValue(e.target.value)}
+                    />
                 </div>
             </div>
 
